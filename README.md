@@ -3,6 +3,8 @@
 
 This demo demonstrates how to load shaders from a json file using the new shader json loadaders in ShaderLib.
 
+[![Youtube](http://img.youtube.com/vi/qgu56qG28NA/0.jpg)](http://www.youtube.com/watch?v=qgu56qG28NA)
+
 The file format for the json file is as follows
 
 ```json

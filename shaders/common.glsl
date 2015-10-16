@@ -24,3 +24,5 @@ struct Lights
 uniform Lights light;
 // @param material passed from our program
 uniform Materials material;
+uniform float time;
+uniform float repeat;

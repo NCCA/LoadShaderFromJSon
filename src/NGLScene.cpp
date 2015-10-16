@@ -70,34 +70,6 @@ void NGLScene::initializeGL()
     exit(EXIT_FAILURE);
   }
 
-  /*  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  // we are creating a shader called Phong
-  shader->createShaderProgram("Phong");
-  // now we are going to create empty shaders for Frag and Vert
-  shader->attachShader("PhongVertex",ngl::VERTEX);
-  shader->attachShader("PhongFragment",ngl::FRAGMENT);
-  // attach the source
-  shader->loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
-  shader->loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
-  // compile the shaders
-  shader->compileShader("PhongVertex");
-  shader->compileShader("PhongFragment");
-  // add them to the program
-  shader->attachShaderToProgram("Phong","PhongVertex");
-  shader->attachShaderToProgram("Phong","PhongFragment");
-  // now bind the shader attributes for most NGL primitives we use the following
-  // layout attribute 0 is the vertex data (x,y,z)
-  shader->bindAttribute("Phong",0,"inVert");
-  // attribute 1 is the UV data u,v (if present)
-  shader->bindAttribute("Phong",1,"inUV");
-  // attribute 2 are the normals x,y,z
-  shader->bindAttribute("Phong",2,"inNormal");
-
-  // now we have associated this data we can link the shader
-  shader->linkProgramObject("Phong");
-  // and make it active ready to load values
-  (*shader)["Phong"]->use();*/
-
   // the shader will use the currently active material and light0 so set them
   ngl::Material m(ngl::GOLD);
   // load our material values to the shader into the structure material (see Vertex shader)
@@ -114,6 +86,9 @@ void NGLScene::initializeGL()
   // The final two are near and far clipping planes of 0.5 and 10
   m_cam->setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
   shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
+  shader->setRegisteredUniform("time",0.0f);
+  shader->setRegisteredUniform("repeat",0.01f);
+
   // now create our light this is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
   // transformations
@@ -127,7 +102,7 @@ void NGLScene::initializeGL()
   // set the viewport for openGL we need to take into account retina display
   // etc by using the pixel ratio as a multiplyer
   glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio());
-  startTimer(10);
+  startTimer(20);
 }
 
 
@@ -269,6 +244,7 @@ void NGLScene::wheelEvent(QWheelEvent *_event)
 
 void NGLScene::keyPressEvent(QKeyEvent *_event)
 {
+  static float repeat=0.1f;
   // this method is called every time the main window recives a key event.
   // we then switch on the key value and set the camera in the GLWindow
   switch (_event->key())
@@ -283,6 +259,14 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_F : showFullScreen(); break;
   // show windowed
   case Qt::Key_N : showNormal(); break;
+  case Qt::Key_1 :
+    repeat-=0.01;
+    ngl::ShaderLib::instance()->setRegisteredUniform("repeat",repeat);
+  break;
+  case Qt::Key_2 :
+    repeat+=0.01;
+    ngl::ShaderLib::instance()->setRegisteredUniform("repeat",repeat);
+  break;
   default : break;
   }
   // finally update the GLWindow and re-draw

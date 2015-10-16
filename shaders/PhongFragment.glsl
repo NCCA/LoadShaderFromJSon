@@ -3,7 +3,6 @@ layout (location =0) out vec4 fragColour;
 /// @brief[in] the vertex normal
 in vec3 fragmentNormal;
 in vec3 uv;
-uniform float time;
 in vec3 lightDir;
 // out the blinn half vector
 in vec3 halfVector;

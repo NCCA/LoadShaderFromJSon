@@ -54,5 +54,5 @@ lightDir=vec3(light.position.xyz-eyeCord.xyz);
 dist = length(lightDir);
 lightDir/= dist;
 halfVector = normalize(eyeDirection + lightDir);
-uv=vec3(inUV,inVert.z);
+uv=vec3(inUV/repeat,repeat);
 }
