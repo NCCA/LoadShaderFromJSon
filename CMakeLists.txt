@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.11)
+set(CMAKE_CXX_STANDARD 11)
 # Name of the project
 set(PROJECT_NAME LoadShadersFromJSon)
 project(${PROJECT_NAME})

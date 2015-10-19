@@ -270,7 +270,6 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   default : break;
   }
   // finally update the GLWindow and re-draw
-  //if (isExposed())
     update();
 }
 

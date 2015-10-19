@@ -1,8 +1,8 @@
 {
   "ShaderProgram": {
     "name": "Phong",
-
-  "Shaders" : [
+     "debug" : false,
+  "Shaders"  : [
     {
       "type": "Vertex",
       "name": "PhongVertex",
