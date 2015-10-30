@@ -1,7 +1,7 @@
 {
   "ShaderProgram": {
     "name": "Phong",
-     "debug" : false,
+     "debug" : true,
   "Shaders"  : [
     {
       "type": "Vertex",
@@ -19,8 +19,6 @@
                 "shaders/noise3D.glsl",
                 "shaders/PhongFragment.glsl"]
     }
-
-
   ]
  }
 }
