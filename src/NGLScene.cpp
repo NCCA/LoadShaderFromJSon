@@ -70,9 +70,9 @@ void NGLScene::initializeGL()
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
   m_cam.setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
-  shader->setShaderParam3f("viewerPos",m_cam.getEye().m_x,m_cam.getEye().m_y,m_cam.getEye().m_z);
-  shader->setRegisteredUniform("time",0.0f);
-  shader->setRegisteredUniform("repeat",0.01f);
+  shader->setUniform("viewerPos",m_cam.getEye().toVec3());
+  shader->setUniform("time",0.0f);
+  shader->setUniform("repeat",0.01f);
 
   // now create our light this is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
@@ -100,10 +100,10 @@ void NGLScene::loadMatricesToShader()
   MVP= M*m_cam.getVPMatrix();
   normalMatrix=MV;
   normalMatrix.inverse();
-  shader->setShaderParamFromMat4("MV",MV);
-  shader->setShaderParamFromMat4("MVP",MVP);
-  shader->setShaderParamFromMat3("normalMatrix",normalMatrix);
-  shader->setShaderParamFromMat4("M",M);
+  shader->setUniform("MV",MV);
+  shader->setUniform("MVP",MVP);
+  shader->setUniform("normalMatrix",normalMatrix);
+  shader->setUniform("M",M);
 }
 
 void NGLScene::paintGL()
@@ -159,11 +159,11 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_N : showNormal(); break;
   case Qt::Key_1 :
     repeat-=0.01;
-    ngl::ShaderLib::instance()->setRegisteredUniform("repeat",repeat);
+    ngl::ShaderLib::instance()->setUniform("repeat",repeat);
   break;
   case Qt::Key_2 :
     repeat+=0.01;
-    ngl::ShaderLib::instance()->setRegisteredUniform("repeat",repeat);
+    ngl::ShaderLib::instance()->setUniform("repeat",repeat);
   break;
   default : break;
   }
@@ -175,7 +175,7 @@ void NGLScene::timerEvent(QTimerEvent *)
 {
   static float t=0.0f;
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->setRegisteredUniform("time",t);
-  t+=0.01;
+  shader->setUniform("time",t);
+  t+=0.01f;
   update();
 }
