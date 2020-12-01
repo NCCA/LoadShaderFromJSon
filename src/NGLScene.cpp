@@ -34,7 +34,7 @@ void NGLScene::initializeGL()
 {
   // we must call this first before any other GL commands to load and link the
   // gl commands from the lib, if this is not done program will crash
-  ngl::NGLInit::instance();
+  ngl::NGLInit::initialize();
 
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
@@ -43,15 +43,15 @@ void NGLScene::initializeGL()
   glEnable(GL_MULTISAMPLE);
    // now to load the shader and set the values
   // grab an instance of shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  bool loaded=shader->loadFromJson("shaders/shaders.json");
+  
+  bool loaded=ngl::ShaderLib::loadFromJson("shaders/shaders.json");
   if(!loaded)
   {
     std::cerr<<"problem loading shaders\n";
     exit(EXIT_FAILURE);
   }
-  shader->printRegisteredUniforms("Phong");
-  shader->use("Phong");
+  ngl::ShaderLib::printRegisteredUniforms("NoiseShader");
+  ngl::ShaderLib::use("NoiseShader");
   // Now we will create a basic Camera from the graphics library
   // This is a static camera so it only needs to be set once
   // First create Values for the camera position
@@ -61,19 +61,19 @@ void NGLScene::initializeGL()
   // now load to our new camera
   m_view=ngl::lookAt(from,to,up);
   ngl::Vec4 lightPos(-2.0f,5.0f,2.0f,0.0f);
-  shader->setUniform("light.position",lightPos);
-  shader->setUniform("light.ambient",0.0f,0.0f,0.0f,1.0f);
-  shader->setUniform("light.diffuse",1.0f,1.0f,1.0f,1.0f);
-  shader->setUniform("light.specular",0.8f,0.8f,0.8f,1.0f);
-  // gold like phong material
-  shader->setUniform("material.ambient",0.274725f,0.1995f,0.0745f,0.0f);
-  shader->setUniform("material.diffuse",0.75164f,0.60648f,0.22648f,0.0f);
-  shader->setUniform("material.specular",0.628281f,0.555802f,0.3666065f,0.0f);
-  shader->setUniform("material.shininess",51.2f);
-  shader->setUniform("viewerPos",from);
+  ngl::ShaderLib::setUniform("light.position",lightPos);
+  ngl::ShaderLib::setUniform("light.ambient",0.0f,0.0f,0.0f,1.0f);
+  ngl::ShaderLib::setUniform("light.diffuse",1.0f,1.0f,1.0f,1.0f);
+  ngl::ShaderLib::setUniform("light.specular",0.8f,0.8f,0.8f,1.0f);
+  // gold like NoiseShader material
+  ngl::ShaderLib::setUniform("material.ambient",0.274725f,0.1995f,0.0745f,0.0f);
+  ngl::ShaderLib::setUniform("material.diffuse",0.75164f,0.60648f,0.22648f,0.0f);
+  ngl::ShaderLib::setUniform("material.specular",0.628281f,0.555802f,0.3666065f,0.0f);
+  ngl::ShaderLib::setUniform("material.shininess",51.2f);
+  ngl::ShaderLib::setUniform("viewerPos",from);
 
-  shader->setUniform("time",0.0f);
-  shader->setUniform("repeat",0.01f);
+  ngl::ShaderLib::setUniform("time",0.0f);
+  ngl::ShaderLib::setUniform("repeat",0.01f);
 
   startTimer(20);
 }
@@ -81,7 +81,7 @@ void NGLScene::initializeGL()
 
 void NGLScene::loadMatricesToShader()
 {
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
+  
 
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
@@ -92,10 +92,10 @@ void NGLScene::loadMatricesToShader()
   MVP= m_project*MV;
   normalMatrix=MV;
   normalMatrix.inverse().transpose();
-  shader->setUniform("MV",MV);
-  shader->setUniform("MVP",MVP);
-  shader->setUniform("normalMatrix",normalMatrix);
-  shader->setUniform("M",M);
+  ngl::ShaderLib::setUniform("MV",MV);
+  ngl::ShaderLib::setUniform("MVP",MVP);
+  ngl::ShaderLib::setUniform("normalMatrix",normalMatrix);
+  ngl::ShaderLib::setUniform("M",M);
 }
 
 void NGLScene::paintGL()
@@ -104,8 +104,7 @@ void NGLScene::paintGL()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0,0,m_win.width,m_win.height);
   // grab an instance of the shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)["Phong"]->use();
+  ngl::ShaderLib::use("NoiseShader");
 
   // Rotation based on the mouse position for our global transform
   ngl::Mat4 rotX;
@@ -121,10 +120,9 @@ void NGLScene::paintGL()
   m_mouseGlobalTX.m_m[3][2] = m_modelPos.m_z;
 
    // get the VBO instance and draw the built in teapot
-  ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
   // draw
   loadMatricesToShader();
-  prim->draw("teapot");
+  ngl::VAOPrimitives::draw("teapot");
 
 
 }
@@ -150,12 +148,12 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   // show windowed
   case Qt::Key_N : showNormal(); break;
   case Qt::Key_1 :
-    repeat-=0.01;
-    ngl::ShaderLib::instance()->setUniform("repeat",repeat);
+    repeat-=0.01f;
+    ngl::ShaderLib::setUniform("repeat",repeat);
   break;
   case Qt::Key_2 :
-    repeat+=0.01;
-    ngl::ShaderLib::instance()->setUniform("repeat",repeat);
+    repeat+=0.01f;
+    ngl::ShaderLib::setUniform("repeat",repeat);
   break;
   default : break;
   }
@@ -166,8 +164,8 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 void NGLScene::timerEvent(QTimerEvent *)
 {
   static float t=0.0f;
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->setUniform("time",t);
+  
+  ngl::ShaderLib::setUniform("time",t);
   t+=0.01f;
   update();
 }
