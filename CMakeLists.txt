@@ -13,16 +13,13 @@ endif()
 project(LoadShadersFromJsonBuild)
 # This is the name of the Exe change this and it will change everywhere
 set(TargetName LoadShadersFromJSon)
+# This will include the file NGLConfig.cmake, you need to add the location to this either using
+# -DCMAKE_PREFIX_PATH=~/NGL or as a system environment variable. 
+find_package(NGL CONFIG REQUIRED)
 # Instruct CMake to run moc automatically when needed (Qt projects only)
 set(CMAKE_AUTOMOC ON)
 # find Qt libs
 find_package(Qt5Widgets)
-find_package(glm CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
-find_package(OpenImageIO CONFIG REQUIRED)
-find_package(freetype CONFIG REQUIRED)
-find_package(RapidJSON CONFIG REQUIRED)
-
 # use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
