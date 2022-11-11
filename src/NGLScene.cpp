@@ -5,7 +5,7 @@
 #include <ngl/NGLInit.h>
 #include <ngl/VAOPrimitives.h>
 #include <ngl/ShaderLib.h>
-
+#include <iostream>
 NGLScene::NGLScene()
 {
   setTitle("Load Shaders from JSON file");
